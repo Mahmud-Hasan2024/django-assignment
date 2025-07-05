@@ -3,10 +3,18 @@
 {% block title %}Update Participant{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Update Participant</h1>
-<form method="post">
+<h1 class="text-2xl font-bold mb-6">Update Participant</h1>
+
+<form method="post" class="bg-white p-6 rounded shadow-md max-w-xl space-y-4">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 hover:text-yellow-400">Save</button>
+    {% for field in form %}
+        <div>
+            <label class="block font-semibold mb-1 text-gray-700">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    {% endfor %}
+    <button type="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-semibold px-4 py-2 rounded">
+        Update
+    </button>
 </form>
 {% endblock %}
