@@ -1,0 +1,30 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Participant List{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+    <h1 class="mb-4 text-xl font-bold">Participant List</h1>
+
+<form method="get" class="mb-4">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search participants..."
+        class="px-3 py-2 border border-gray-300 rounded w-64">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Search</button>
+</form>
+
+    <ul class="bg-white border rounded p-4 space-y-2">
+        {% for participant in participants %}
+            <li class="mt-4 mb-4">
+                <a href="{% url 'participant_detail' participant.pk %}" class="text-base text-blue-600 hover:underline">
+                    {{ participant.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'create_participant' %}" class="inline-block mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+        Create New Participant
+    </a>
+</div>
+{% endblock %}
+

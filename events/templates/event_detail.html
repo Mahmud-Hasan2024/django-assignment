@@ -1,0 +1,37 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Event Detail{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">{{ event.name }}</h1>
+
+    <p><strong>Type:</strong> {{ event.description }}</p>
+    <p><strong>Date:</strong> {{ event.date }}</p>
+    <p><strong>Time:</strong> {{ event.time }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Category:</strong> {{ event.category.name }}</p>
+
+    <h2 class="text-lg font-bold inline-block mt-4 mb-2">Participants</h2>
+
+    <ul class="list-disc list-inside">
+        {% for participant in event.participants.all %}
+            <li class="mb-1">{{ participant.name }} ({{ participant.email }})</li>
+        {% empty %}
+            <li>No participants added.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'update_event' event.pk %}" class="inline-block bg-yellow-500 text-white px-4 py-2 rounded mt-4">
+        Edit Event
+    </a>
+
+    <form action="{% url 'delete_event' event.pk %}" method="post" class="inline-block mt-2">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">
+            Delete Event
+        </button>
+    </form>
+</div>
+{% endblock %}
+
