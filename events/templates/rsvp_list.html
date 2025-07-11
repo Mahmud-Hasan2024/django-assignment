@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}My RSVPs{% endblock %}
+
+{% block nav %}
+    {% if user.is_authenticated %}
+        {% include 'logged-nav.html' %}
+    {% else %}
+        {% include 'non-logged-nav.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">Events You RSVPed To</h2>
+
+    {% if events %}
+        <ul class="bg-white border rounded p-4 space-y-2">
+            {% for event in events %}
+                <li>
+                    <a href="{% url 'event_detail' event.pk %}" class="text-base text-blue-600 hover:underline hover:bg-blue-700 hover:text-yellow-400">{{ event.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-gray-600">You haven't RSVPed to any events yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% load static %}
+
+<nav class="bg-white shadow-md p-4">
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <img src="{% static 'images/northern-university.png' %}" alt="Logo" class="h-8 w-auto">
+            <span class="text-lg font-bold text-blue-600">NUB Event Management System</span>
+        </div>
+
+        {% if user.is_authenticated %}
+            <div class="space-x-4">
+                <a href="{% url 'logout' %}" class="text-red-500 hover:underline">Logout</a>
+            </div>
+        {% else %}
+            <div class="space-x-4">
+                <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
+                <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Register</a>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+
+{% if user.is_authenticated %}
+    <div class="bg-blue-500 p-4 mb-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div>
+                {% if user_role == 'admin' %}
+                    <a href="{% url 'dashboard' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Admin_Dashboard</a>
+                    <a href="{% url 'event_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Events</a>
+                    <a href="{% url 'participant_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Participants</a>
+                    <a href="{% url 'category_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Categories</a>
+                    <a href="{% url 'manage_users' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Manage_Users</a>
+                    <a href="{% url 'manage_groups' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Manage_Groups</a>
+                {% elif user_role == 'organizer' %}
+                    <a href="{% url 'dashboard' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Organizer_Dashboard </a>
+                    <a href="{% url 'event_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Events</a>
+                    <a href="{% url 'category_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Categories</a>
+                {% elif user_role == 'participant' %}
+                    <a href="{% url 'event_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Events</a>
+                    <a href="{% url 'rsvp_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">My_RSVPs</a>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}

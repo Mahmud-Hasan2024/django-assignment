@@ -1,6 +1,14 @@
-{% extends 'dashboard.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Participant List{% endblock %}
+
+{% block nav %}
+    {% if user.is_authenticated %}
+        {% include 'logged-nav.html' %}
+    {% else %}
+        {% include 'non-logged-nav.html' %}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-4">
@@ -16,7 +24,7 @@
         {% for participant in participants %}
             <li class="mt-4 mb-4">
                 <a href="{% url 'participant_detail' participant.pk %}" class="text-base text-blue-600 hover:underline hover:bg-blue-700 hover:text-yellow-400">
-                    {{ participant.name }}
+                    {{ participant.username }}
                 </a>
             </li>
         {% endfor %}
@@ -27,4 +35,3 @@
     </a>
 </div>
 {% endblock %}
-

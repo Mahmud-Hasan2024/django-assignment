@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Edit User{% endblock %}
+
+{% block nav %}
+    {% if user.is_authenticated %}
+        {% include 'logged-nav.html' %}
+    {% else %}
+        {% include 'non-logged-nav.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">Edit User</h2>
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.username.label_tag }}<br>
+        {{ form.username }}<br><br>
+
+        {{ form.email.label_tag }}<br>
+        {{ form.email }}<br><br>
+
+        <label for="group">Group</label><br>
+        <select name="group" class="w-full p-2 border mb-4 rounded">
+            <option value="">Select Group</option>
+            {% for group in all_groups %}
+                <option value="{{ group.name }}" {% if group.name == current_group %}selected{% endif %}>{{ group.name }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="flex justify-between mt-4">
+            <a href="{% url 'manage_users' %}" class="text-red-600 hover:underline">Cancel</a>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update User</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

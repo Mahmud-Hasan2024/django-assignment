@@ -1,0 +1,12 @@
+{% load static %}
+
+<nav class="bg-white shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+        <img src="{% static 'images/northern-university.png' %}" alt="Logo" class="h-8 w-auto">
+        <span class="text-lg font-bold text-blue-600">NUB Event Management System</span>
+    </div>
+    <div class="space-x-4">
+        <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
+        <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Register</a>
+    </div>
+</nav>

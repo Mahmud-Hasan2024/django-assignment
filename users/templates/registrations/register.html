@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    {% load static %}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+        <h1 class="text-2xl font-bold text-center text-blue-600">Create Account</h1>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-500 text-sm">{{ field.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                Sign Up
+            </button>
+        </form>
+
+        {% for message in messages %}
+            <p class="bg-green-500 text-white">{{message}}</p>
+        {% endfor %}
+
+        <p class="text-sm text-center text-gray-600">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Manage Groups{% endblock %}
+
+{% block nav %}
+    {% if user.is_authenticated %}
+        {% include 'logged-nav.html' %}
+    {% else %}
+        {% include 'non-logged-nav.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+    <h1 class="text-2xl font-bold mb-4">Existing Groups</h1>
+    <table class="w-full table-auto border-collapse mb-6">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border px-4 py-2 text-center">Group Name</th>
+                <th class="border px-4 py-2 text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in groups %}
+            <tr>
+                <td class="border px-4 py-2 text-center">{{ group.name }}</td>
+                <td class="border px-4 py-2 text-center">
+                    <a href="{% url 'edit_group' group.id %}" class="text-blue-600 hover:underline">Edit Permissions</a> |
+                    <a href="{% url 'delete_group' group.id %}" class="text-red-500 hover:underline ml-2">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flex justify-center">
+        <a href="{% url 'create_group' %}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Create Group</a>
+    </div>
+</div>
+{% endblock %}

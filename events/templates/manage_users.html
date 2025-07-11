@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users{% endblock %}
+
+{% block nav %}
+    {% if user.is_authenticated %}
+        {% include 'logged-nav.html' %}
+    {% else %}
+        {% include 'non-logged-nav.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">Existing Users</h1>
+    <table class="w-full table-auto border-collapse mb-6">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border px-4 py-2 text-center">Username</th>
+                <th class="border px-4 py-2 text-center">Email</th>
+                <th class="border px-4 py-2 text-center">Role</th>
+                <th class="border px-4 py-2 text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td class="border px-4 py-2 text-center">{{ user.username }}</td>
+                <td class="border px-4 py-2 text-center">{{ user.email }}</td>
+                <td class="border px-4 py-2 text-center">{{ user.groups.first.name }}</td>
+                <td class="border px-4 py-2 text-center">
+                    <a href="{% url 'assign_role' user.id %}" class="text-blue-600 hover:underline">Assign Role</a> |
+                    <a href="{% url 'edit_user' user.id %}" class="text-blue-600 hover:underline">Edit User</a> |
+                    <a href="{% url 'delete_user' user.id %}" class="text-red-500 hover:underline">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flex justify-center mt-6">
+        <a href="{% url 'create_user' %}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Create User</a>
+    </div>
+
+</div>
+{% endblock %}

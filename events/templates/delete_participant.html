@@ -1,10 +1,18 @@
-{% extends 'dashboard.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Delete Participant{% endblock %}
 
+{% block nav %}
+    {% if user.is_authenticated %}
+        {% include 'logged-nav.html' %}
+    {% else %}
+        {% include 'non-logged-nav.html' %}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 <h1 class="text-2xl font-bold mb-4">Delete Participant</h1>
-<p>Are you sure you want to delete the participant "{{ participant.name }}"?</p>
+<p>Are you sure you want to delete the participant "{{ participant.username }}"?</p>
 <form method="post">
     {% csrf_token %}
     <button type="submit" class="mt-4 inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
