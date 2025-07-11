@@ -18,8 +18,10 @@
         <p class="text-gray-700">You are an <strong>Admin</strong>. You can manage users, roles, and events.</p>
     {% elif user_role == 'organizer' %}
         <p class="text-gray-700">You are an <strong>Organizer</strong>. You can manage events and categories.</p>
-    {% else %}
+    {% elif user_role == 'participant' %}
         <p class="text-gray-700">You are a <strong>Participant</strong>. You can RSVP and view events.</p>
+    {% else %}
+        <p class="text-gray-700">You are not <strong>logged in</strong>. Please login to use this website.</p>
     {% endif %}
 </div>
 {% endblock %}
