@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     {% load static %}
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
@@ -26,7 +27,7 @@
         </form>
 
         {% for message in messages %}
-            <p class="bg-green-500 text-white">{{message}}</p>
+            <p class="bg-green-500 text-white p-2 rounded text-center">{{ message }}</p>
         {% endfor %}
 
         <p class="text-sm text-center text-gray-600">

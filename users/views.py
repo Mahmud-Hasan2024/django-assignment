@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from users.forms import CreateUserForm, LoginForm
+from users.forms import CreateUserForm, CustomLoginForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User, Group
 
@@ -27,9 +27,9 @@ def register(request):
     return render(request, 'registrations/register.html', context)
 
 def sign_in(request):
-    form = LoginForm()
+    form = CustomLoginForm()
     if request.method == 'POST':
-        form = LoginForm(data=request.POST)
+        form = CustomLoginForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)

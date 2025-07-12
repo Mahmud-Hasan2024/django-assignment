@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     {% load static %}
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+    <div class="bg-white p-6 rounded shadow w-full max-w-md space-y-6">
         <h1 class="text-2xl font-bold text-center text-blue-600">Login</h1>
 
         {% if messages %}
@@ -23,6 +25,7 @@
             {% if form.non_field_errors %}
                 <p class="text-red-500 text-sm text-center">{{ form.non_field_errors|striptags }}</p>
             {% endif %}
+
             {% for field in form %}
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
@@ -32,13 +35,14 @@
                     {% endif %}
                 </div>
             {% endfor %}
+
             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
                 Login
             </button>
         </form>
 
         <p class="text-sm text-center text-gray-600">
-            Don't have an account?
+            Don't have an account? 
             <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Sign up</a>
         </p>
     </div>
