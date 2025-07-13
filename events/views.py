@@ -174,7 +174,7 @@ def dashboard_view(request):
     user = request.user
     user_role = None
 
-    if user.is_superuser or user.groups.filter(name__iexact='Organizer').exists():
+    if user.is_superuser or user.groups.filter(name__iexact='admin').exists():
         user_role = 'admin'
         total_users = User.objects.count()
         total_events = Event.objects.count()
