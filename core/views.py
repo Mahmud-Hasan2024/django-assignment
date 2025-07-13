@@ -11,7 +11,7 @@ def home(request):
     elif user.groups.filter(name__iexact='participant').exists():
         user_role = 'participant'
     else:
-        user_role = None  # or some default
+        user_role = None
 
     context = {
         'user_role': user_role,
