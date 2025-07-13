@@ -4,7 +4,7 @@ from django.shortcuts import render
 def home(request):
     user = request.user
 
-    if user.is_superuser:
+    if user.is_superuser or user.groups.filter(name__iexact='admin').exists():
         user_role = 'admin'
     elif user.groups.filter(name__iexact='organizer').exists():
         user_role = 'organizer'
