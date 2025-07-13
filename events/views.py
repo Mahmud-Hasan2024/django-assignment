@@ -8,12 +8,15 @@ from events.models import Event, Category
 from django.contrib.auth.models import Group, User
 from django.utils import timezone
 from django.contrib import messages
-from django.core.mail import send_mail
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 # Create your views here.
 def get_user_role(request):
     if request.user.is_authenticated:
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.groups.filter(name='admin').exists():
             return 'admin'
         elif request.user.groups.filter(name='organizer').exists():
             return 'organizer'
@@ -21,152 +24,209 @@ def get_user_role(request):
             return 'participant'
     return None
 
-@login_required
-def event_list(request):
-    user_role = get_user_role(request)
-    query = request.GET.get('q', '')
-    events = Event.objects.select_related('category').prefetch_related('participants')
-    if query:
-        events = events.filter(name__icontains=query)
-    return render(request, 'event_list.html', {'events': events, 'query': query, 'user_role': user_role})
+# Class Based View ekhan theke Shuru korsi
 
-@login_required
-def event_detail(request, event_id):
-    user_role = get_user_role(request)
-    event = Event.objects.select_related('category').prefetch_related('participants').get(pk=event_id)
-    return render(request, 'event_detail.html', {'event': event, 'user_role': user_role})
+class EventListView(LoginRequiredMixin, ListView):
+    model = Event
+    template_name = 'event_list.html'
+    context_object_name = 'events'
 
-@login_required
-def create_event(request):
-    user_role = get_user_role(request)
-    if request.method == 'POST':
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('event_list')
-    else:
-        form = EventForm()
-    return render(request, 'create_event.html', {'form': form, 'user_role': user_role})
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        events = Event.objects.select_related('category').prefetch_related('participants')
+        if query:
+            events = events.filter(name__icontains=query)
+        return events
 
-@login_required
-def update_event(request, event_id):
-    user_role = get_user_role(request)
-    event = Event.objects.get(pk=event_id)
-    if request.method == 'POST':
-        form = EventForm(request.POST, request.FILES, instance=event)
-        if form.is_valid():
-            form.save()
-            return redirect('event_detail', event_id=event.id)
-    else:
-        form = EventForm(instance=event)
-    return render(request, 'update_event.html', {'form': form, 'user_role': user_role})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['user_role'] = get_user_role(self.request)
+        return context
 
-@login_required
-def delete_event(request, event_id):
-    user_role = get_user_role(request)
-    event = Event.objects.get(pk=event_id)
-    if request.method == 'POST':
-        event.delete()
-        return redirect('event_list')
-    return render(request, 'delete_event.html', {'event': event, 'user_role': user_role})
 
-@login_required
-def participant_list(request):
-    user_role = get_user_role(request)
-    query = request.GET.get('q', '')
-    participants = User.objects.prefetch_related('events')
-    if query:
-        participants = participants.filter(username__icontains=query)
-    return render(request, 'participant_list.html', {'participants': participants, 'query': query, 'user_role': user_role})
+class EventDetailView(LoginRequiredMixin, DetailView):
+    model = Event
+    template_name = 'event_detail.html'
+    context_object_name = 'event'
 
-@login_required
-def participant_detail(request, participant_id):
-    user_role = get_user_role(request)
-    participant = User.objects.prefetch_related('events').get(pk=participant_id)
-    return render(request, 'participant_detail.html', {'participant': participant, 'user_role': user_role})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
 
-@login_required
-def create_participant(request):
-    user_role = get_user_role(request)
-    if request.method == 'POST':
-        form = ParticipantCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('participant_list')
-    else:
-        form = ParticipantCreationForm()
-    return render(request, 'create_participant.html', {'form': form, 'user_role': user_role})
 
-@login_required
-def update_participant(request, participant_id):
-    user_role = get_user_role(request)
-    participant = User.objects.get(pk=participant_id)
-    if request.method == 'POST':
-        form = ParticipantUpdateForm(request.POST, instance=participant)
-        if form.is_valid():
-            form.save()
-            return redirect('participant_detail', participant_id=participant.id)
-    else:
-        form = ParticipantUpdateForm(instance=participant)
-    return render(request, 'update_participant.html', {'form': form, 'user_role': user_role})
+class EventCreateView(LoginRequiredMixin, CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'create_event.html'
+    success_url = reverse_lazy('event_list')
 
-@login_required
-def delete_participant(request, participant_id):
-    user_role = get_user_role(request)
-    participant = User.objects.get(pk=participant_id)
-    if request.method == 'POST':
-        participant.delete()
-        return redirect('participant_list')
-    return render(request, 'delete_participant.html', {'participant': participant, 'user_role': user_role})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
 
-@login_required
-def category_list(request):
-    user_role = get_user_role(request)
-    query = request.GET.get('q', '')
-    categories = Category.objects.all()
-    if query:
-        categories = categories.filter(name__icontains=query)
-    return render(request, 'category_list.html', {'categories': categories, 'query': query, 'user_role': user_role})
 
-@login_required
-def category_detail(request, category_id):
-    user_role = get_user_role(request)
-    category = Category.objects.prefetch_related('events').get(pk=category_id)
-    return render(request, 'category_detail.html', {'category': category, 'user_role': user_role})
+class EventUpdateView(LoginRequiredMixin, UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'update_event.html'
 
-@login_required
-def create_category(request):
-    user_role = get_user_role(request)
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('category_list')
-    else:
-        form = CategoryForm()
-    return render(request, 'create_category.html', {'form': form, 'user_role': user_role})
+    def get_success_url(self):
+        return reverse_lazy('event_detail', kwargs={'pk': self.object.pk})
 
-@login_required
-def update_category(request, category_id):
-    user_role = get_user_role(request)
-    category = Category.objects.get(pk=category_id)
-    if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
-        if form.is_valid():
-            form.save()
-            return redirect('category_detail', category_id=category.id)
-    else:
-        form = CategoryForm(instance=category)
-    return render(request, 'update_category.html', {'form': form, 'user_role': user_role})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
 
-@login_required
-def delete_category(request, category_id):
-    user_role = get_user_role(request)
-    category = Category.objects.get(pk=category_id)
-    if request.method == 'POST':
-        category.delete()
-        return redirect('category_list')
-    return render(request, 'delete_category.html', {'category': category, 'user_role': user_role})
+
+class EventDeleteView(LoginRequiredMixin, DeleteView):
+    model = Event
+    template_name = 'delete_event.html'
+    success_url = reverse_lazy('event_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class ParticipantListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'participant_list.html'
+    context_object_name = 'participants'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        users = User.objects.prefetch_related('events')
+        if query:
+            users = users.filter(username__icontains=query)
+        return users
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class ParticipantDetailView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'participant_detail.html'
+    context_object_name = 'participant'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class ParticipantCreateView(LoginRequiredMixin, CreateView):
+    model = User
+    form_class = ParticipantCreationForm
+    template_name = 'create_participant.html'
+    success_url = reverse_lazy('participant_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request.user)
+        return context
+
+
+class ParticipantUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = ParticipantUpdateForm
+    template_name = 'update_participant.html'
+
+    def get_success_url(self):
+        return reverse_lazy('participant_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class ParticipantDeleteView(LoginRequiredMixin, DeleteView):
+    model = User
+    template_name = 'delete_participant.html'
+    success_url = reverse_lazy('participant_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class CategoryListView(LoginRequiredMixin, ListView):
+    model = Category
+    template_name = 'category_list.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        if query:
+            return Category.objects.filter(name__icontains=query)
+        return Category.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class CategoryDetailView(LoginRequiredMixin, DetailView):
+    model = Category
+    template_name = 'category_detail.html'
+    context_object_name = 'category'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class CategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'create_category.html'
+    success_url = reverse_lazy('category_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class CategoryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'update_category.html'
+
+    def get_success_url(self):
+        return reverse_lazy('category_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+
+
+class CategoryDeleteView(LoginRequiredMixin, DeleteView):
+    model = Category
+    template_name = 'delete_category.html'
+    success_url = reverse_lazy('category_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_role'] = get_user_role(self.request)
+        return context
+    
+
+# Class Based View ekhane shesh korsi
 
 
 @login_required
@@ -174,7 +234,7 @@ def dashboard_view(request):
     user = request.user
     user_role = None
 
-    if user.is_superuser:
+    if user.is_superuser or user.groups.filter(name__iexact='admin').exists():
         user_role = 'admin'
         total_users = User.objects.count()
         total_events = Event.objects.count()

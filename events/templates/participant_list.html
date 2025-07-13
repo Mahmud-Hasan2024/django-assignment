@@ -20,7 +20,7 @@
     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hover:text-yellow-400">Search</button>
 </form>
 
-    <ul class="bg-white border rounded p-4 space-y-2">
+    <ul class="bg-white border rounded p-4 space-y-4">
         {% for participant in participants %}
             <li class="mt-4 mb-4">
                 <a href="{% url 'participant_detail' participant.pk %}" class="text-base text-blue-600 hover:underline hover:bg-blue-700 hover:text-yellow-400">

@@ -8,9 +8,12 @@
         </div>
 
         {% if user.is_authenticated %}
-            <div class="space-x-4">
-                <a href="{% url 'logout' %}" class="text-red-500 hover:underline">Logout</a>
-            </div>
+            <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-red-500 hover:underline bg-transparent border-none cursor-pointer p-0">
+                Logout
+            </button>
+            </form>
         {% else %}
             <div class="space-x-4">
                 <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
@@ -38,7 +41,6 @@
                 {% elif user_role == 'participant' %}
                     <a href="{% url 'event_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">Events</a>
                     <a href="{% url 'rsvp_list' %}" class="ml-4 text-white text-lg hover:underline hover:text-yellow-400">My_RSVPs</a>
-
                 {% endif %}
             </div>
         </div>

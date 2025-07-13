@@ -4,6 +4,8 @@ from django.contrib.auth import login, logout
 from users.forms import CreateUserForm, CustomLoginForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.views import LoginView
+from users.forms import CustomLoginForm
 
 # Create your views here.
 def register(request):
@@ -24,22 +26,15 @@ def register(request):
             return redirect('login')
 
     context = {'form' : form}
-    return render(request, 'registrations/register.html', context)
+    return render(request, 'registration/register.html', context)
 
-def sign_in(request):
-    form = CustomLoginForm()
-    if request.method == 'POST':
-        form = CustomLoginForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
-    return render(request, 'registrations/login.html', {'form': form})
+class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        return next_url if next_url else super().get_success_url()
 
-def sign_out(request):
-    logout(request)
-    return redirect('login')
 
 
 def activate_user(request, user_id, token):
@@ -50,5 +45,5 @@ def activate_user(request, user_id, token):
         messages.success(request, "Your account has been activated. You can now log in.")
         return redirect('login')
     else:
-        return render(request, 'registrations/activation_invalid.html')
+        return render(request, 'registration/activation_invalid.html')
 

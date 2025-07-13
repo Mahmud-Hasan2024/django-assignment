@@ -1,26 +1,26 @@
 from django.urls import path
-from events.views import dashboard_view, event_list, event_detail, create_event, update_event, delete_event, participant_list, participant_detail, create_participant, update_participant, delete_participant, category_list, category_detail, create_category, update_category, delete_category, manage_groups, manage_users, create_user, create_group, delete_group, delete_user, assign_role, no_permission, edit_user, edit_group, rsvp_list, rsvp_event
+from events.views import dashboard_view, EventListView, EventDetailView, EventCreateView, EventUpdateView, EventDeleteView, ParticipantListView, ParticipantDetailView, ParticipantCreateView, ParticipantUpdateView, ParticipantDeleteView, CategoryListView, CategoryDetailView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, manage_groups, manage_users, create_user, create_group, delete_group, delete_user, assign_role, no_permission, edit_user, edit_group, rsvp_list, rsvp_event
 
 urlpatterns = [
     path('', dashboard_view, name='dashboard'),
     
-    path('event/', event_list, name='event_list'),
-    path('event/<int:event_id>/', event_detail, name='event_detail'),
-    path('event/create/', create_event, name='create_event'),
-    path('event/<int:event_id>/update/', update_event, name='update_event'),
-    path('event/<int:event_id>/delete/', delete_event, name='delete_event'),
+    path('event/', EventListView.as_view(), name='event_list'),
+    path('event/<int:pk>/', EventDetailView.as_view(), name='event_detail'),
+    path('event/create/', EventCreateView.as_view(), name='create_event'),
+    path('event/<int:pk>/update/', EventUpdateView.as_view(), name='update_event'),
+    path('event/<int:pk>/delete/', EventDeleteView.as_view(), name='delete_event'),
 
-    path('participant/', participant_list, name='participant_list'),
-    path('participant/<int:participant_id>/', participant_detail, name='participant_detail'),
-    path('participant/create/', create_participant, name='create_participant'),
-    path('participant/<int:participant_id>/update/', update_participant, name='update_participant'),
-    path('participant/<int:participant_id>/delete/', delete_participant, name='delete_participant'),
+    path('participant/', ParticipantListView.as_view(), name='participant_list'),
+    path('participant/<int:pk>/', ParticipantDetailView.as_view(), name='participant_detail'),
+    path('participant/create/', ParticipantCreateView.as_view(), name='create_participant'),
+    path('participant/<int:pk>/update/', ParticipantUpdateView.as_view(), name='update_participant'),
+    path('participant/<int:pk>/delete/', ParticipantDeleteView.as_view(), name='delete_participant'),
 
-    path('category/', category_list, name='category_list'),
-    path('category/<int:category_id>/', category_detail, name='category_detail'),
-    path('category/create/', create_category, name='create_category'),
-    path('category/<int:category_id>/update/', update_category, name='update_category'),
-    path('category/<int:category_id>/delete/', delete_category, name='delete_category'),
+    path('category/', CategoryListView.as_view(), name='category_list'),
+    path('category/<int:pk>/', CategoryDetailView.as_view(), name='category_detail'),
+    path('category/create/', CategoryCreateView.as_view(), name='create_category'),
+    path('category/<int:pk>/update/', CategoryUpdateView.as_view(), name='update_category'),
+    path('category/<int:pk>/delete/', CategoryDeleteView.as_view(), name='delete_category'),
 
     path('manage-users/', manage_users, name='manage_users'),
     path('assign-role/<int:user_id>/', assign_role, name='assign_role'),
