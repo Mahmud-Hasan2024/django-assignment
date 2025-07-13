@@ -12,8 +12,8 @@ from django.core.mail import send_mail
 
 # Create your views here.
 def get_user_role(request):
-    if request.user.is_authenticated or request.user.groups.filter(name='admin').exists():
-        if request.user.is_superuser:
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.groups.filter(name='admin').exists():
             return 'admin'
         elif request.user.groups.filter(name='organizer').exists():
             return 'organizer'
